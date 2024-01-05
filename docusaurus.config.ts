@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'AppSync WTF',
-  tagline: 'A collection of resources to learn and work with AWS AppSync',
+  tagline: 'A collection of resources to learn and build with AWS AppSync',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here

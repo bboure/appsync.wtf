@@ -22,7 +22,7 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   return (
-    <Layout description="A collection of resources to learn and work with AWS AppSync.">
+    <Layout description="A collection of resources to learn and build with AWS AppSync.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
