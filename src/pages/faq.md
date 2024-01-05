@@ -21,7 +21,7 @@ At the time of writing this, there are not any contributor guidelines on how to 
 
 ### What does WTF stand for?
 
-**W**ay **T**o **F**oster! 😉
+**W**ays **T**o **F**oster! 😉
 
 ### Can I contribute?
 

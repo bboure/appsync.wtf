@@ -2,6 +2,11 @@
 
 This page contains a collection of projects, libraries and other tools that can be used with AWS AppSync.
 
+## IaC (Infrastructure as Code)
+
+- [CDK AppSync Construct](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_appsync-readme.html): Constructs for building AppSync APIs with the CDK.
+- [serverless-appsync-plugin](https://github.com/sid88in/serverless-appsync-plugin): Deploy AppSync APIs with the Serverless Framework.
+
 ## Developer tools
 
 - [GraphBolt](https://graphbolt.dev): A desktop application to help developers build, test debug and manage AWS AppSync APIs.
