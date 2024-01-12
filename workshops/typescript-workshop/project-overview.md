@@ -32,7 +32,7 @@ The working directory should look like this.
 - `serverless.ts` is the entry point of our Serverless Framework definitions.
 - `src` will contain the business logic for our API as well as some TypeScript types.
 
-## The GraphQL schema
+## The GraphQL Schema
 
 Open `schema/schema.graphql`. It contains a basic schema for our API, including several types (e.g. `Task` and `Project`), some queries (e.g. `getTask`) and mutations (`createTask`).
 
@@ -48,7 +48,7 @@ By default, AWS AppSync does not support TypeScript. Instead, it supports a [lim
 
 In our project, we installed and configured eslint (`.eslintrc.json`). This gives us linting capabilities about good practices when writing code in TypeScript. However, AppSync does not support all of “standard” JavaScript/TypeScript features.
 
-Luckily, the AppSync provides an useful eslint plugin that we can use and will warn us about invalid usages: `@aws-appsync/eslint-plugin`
+The AppSync team provides an useful eslint plugin that we can use and will warn us about invalid usages: [@aws-appsync/eslint-plugin](https://www.npmjs.com/package/@aws-appsync/eslint-plugin)
 
 We are using the plugin in this project, but because we only want it to be active inside resolvers code, we use an additional eslint config file that we placed in `src/resolvers/.eslintrc.json`. This way, those special rules will only apply to resolvers, and not the rest of our codebase (for example, Lambda functions).
 

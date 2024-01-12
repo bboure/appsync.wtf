@@ -5,21 +5,11 @@ sidebar_label: Authorization
 
 # 4. Authorization
 
-## 4.1. Limit writing privileges to administrators.
+## 4.1. Limit write privileges to admins
 
-In our current situation, any user is capable of create, updating and deleting tasks and projects. But what if we wanted to only allow some users (i.e. admins) to operate those operations?
+In our current situation, any user is capable of creating, updating and deleting tasks and projects. But what if we wanted to only allow some users (i.e. admins) to execute those actions?
 
-First, let’s create a new group in Cognito named `Admin`
-
-Go to the [Amazon Cognito AWS console](https://us-east-1.console.aws.amazon.com/cognito/v2/idp/user-pools?region=us-east-1), and select the user pool relative to our API.
-
-Under `Group`, click the `Create Group` button. Give it a name: `Admins`, and hit _save._
-
-Create a new user, using the same two commands as in the [previous section](https://www.notion.so/3-Testing-d6f7c0dc7c734e25946375f2dfe6f3a5?pvs=21).
-
-Finally, add the user to the group using the AWS console.
-
-When you are done, open the schema file: `schema/schema.graphql`. Change the `Mutation` definition as follows.
+Open the schema file: `schema/schema.graphql`. Change the `Mutation` definition as follows.
 
 ```graphql
 type Mutation {
@@ -38,15 +28,15 @@ type Mutation {
 }
 ```
 
-Here, we make use of the `@aws_auth` directive, which specifies that only users in the `Admin` group are allowed to invoke
+Here, we make use of the `@aws_auth` directive, which specifies that only users in the `Admin` group are allowed to call these mutations.
 
-Time to deploy again.
+Finally, deploy the API again.
 
 ```bash
 npx sls deploy
 ```
 
-When the deployment is done, try to create, update or delete a Task using your initial user. You should observe that it fails.
+When the deployment is done, try to create, update or delete a Task. You should observe that it fails with an `Unauthorized` error.
 
 ```json
 {
@@ -70,25 +60,34 @@ When the deployment is done, try to create, update or delete a Task using your i
 }
 ```
 
-Then, try to login using your admin user. This time ,you should be allowed to perform the action.
+Now, let’s create a new group in Cognito named `Admins`.
 
-## 4.2. Limit tasks to Project users
+Go to the [Amazon Cognito AWS console](https://us-east-1.console.aws.amazon.com/cognito/v2/idp/user-pools?region=us-east-1), and select the user pool relative to our API.
 
-Now that only admins can perform write operations on tasks, we would like limit users from seeing tasks only for projects they are in.
+Under _Group_, click the _Create Group_ button. Give it a name: `Admins`, and hit _save._
 
-In this case, we cannot use a directive since projects are not the same as groups. Projects and user relations live in DynamoDB.
+Create a new user, using the same two commands as in the [previous section](./testing#31-create-a-user-in-cognito).
+
+Finally, add the user to the group using the AWS console. Open the user and click on _Add user to group_. Pick the `Admins` group.
+
+Then, try to login using your new user, and execute the mutation again. This time, you should be allowed to perform the action.
+
+## 4.2. Limit Tasks to Project Users
+
+Now that only admins can perform write operations on tasks, we would also like to prevent users from seeing tasks of for projects they are in.
+
+In this case, we cannot use a directive since projects are not the same thing as groups. Projects and user associations live in DynamoDB.
 
 To achieve our goal, we can use pipeline resolvers.
 
-Pipeline resolvers are a special kind of resolver that allows for connecting to more than one data source. Each pipeline resolver is composed of up to 10 functions that are executed in a sequence.
+Pipeline resolvers are a special kind of resolver that allow for connecting to more than one data source. Each pipeline resolver is composed of up to 10 functions that are executed in a sequence.
 
-In our case, we want to first fetch a Task, extract its `projectId`, and then verify that the user is in that project by looking in the `ProjectUsers` table if a relation record exists.
+In our case, we want to first fetch a Task, extract its `projectId`, and then verify that the user is in that project by looking in the `ProjectUsers` table if a relation record exists. If the record exists, it means that the user is in the project. If not, we disallow the request by throwing an `unauthorized` error.
 
 ```mermaid
 graph LR
-    A([Start]) --> B[Get Task record]
-    B --> C[Get ProjectUsers record]
-    C --> exists{{Record exists?}}
+    c[Get Task record] --> get_project_user[Get ProjectUsers record]
+    get_project_user --> exists{{Record exists?}}
 		exists -- no --> unauth(unauthorized)
     exists -- yes --> e([Resolve Task])
 ```
@@ -104,24 +103,28 @@ pipelineFunctions: {
  },
 ```
 
-This defines a pipeline function. It uses the `projectUsers` data source which connects to the DynamoDb table of the same name.
+This defines a pipeline function. It uses the `projectUsers` data source which connects to the DynamoDB table of the same name.
 
 Now, create the following file `src/resolvers/authorizeUser.ts`
 
-```
+```tsx showLineNumbers
 import { Context, util, runtime } from '@aws-appsync/utils';
 import { get } from '@aws-appsync/utils/dynamodb';
 import { DBProjectUser } from '../types/db';
 import { isCognitoIdentity } from '../utils';
 
 export const request = (ctx: Context) => {
+  // highlight-start
   if (!isCognitoIdentity(ctx.identity)) {
     util.unauthorized();
   }
+  // highlight-end
 
+  // highlight-start
   if (ctx.identity.groups?.includes('Admins')) {
     runtime.earlyReturn(ctx.prev.result);
   }
+  // highlight-end
 
   return get<DBProjectUser>({
     key: {
@@ -132,34 +135,34 @@ export const request = (ctx: Context) => {
 };
 
 export const response = (ctx: Context) => {
+  // highlight-start
   if (!ctx.result) {
     util.unauthorized();
   }
 
   return ctx.prev.result;
+  // highlight-end
 };
 ```
 
-A pipeline resolver looks exactly like a normal (unit) resolver. In the above code, we generate a `GetItem` request to DynamoDB by using the `proejctId` from the task and the `username` of the current user.
+A pipeline resolver looks exactly like a unit resolver. In the above code, we generate a `GetItem` request to DynamoDB by using the `projectId` from the task (`ctx.prev.result.projectId`) and the `username` of the current user.
 
 We also do a few more pre-checks:
 
-First, we use `isCognitoIdentity`, a custom function that I created. It serves two purposes.
+On lines 7-9, we use `isCognitoIdentity`, a custom function that I created. It serves two purposes.
 
 1. It makes sure that the current request is invoked using a Cognito user. Since, AppSync supports more than one authorizer, we need to make sure that we are using Cognito before we proceed. If it’s not the case, we always reject the request with `unauthorized()`
 2. It serves as a TypeScript type guard by making sure that `ctx.identity` is of type `AppSyncIdentityCognito`. This avoids TypeScript from complaining that `username` might not exist.
 
-We also check that the current user is not in the admin group. If the user is an admin, we always want the request to proceed. In this case, we make use of the `runtime.earlyReturn()` function. This function allows us to shortcircuit the current resolver invocation and **\*\*\*\***skip**\*\*\*\*** the datasource request In our case, it mens that the `GetItem` request to DynamoDB will not happen at all.
+On lines 11-13, we also check that the current user is not in the `Admins` group. If the user is an admin, we always want the request to proceed and we don't care if the user belongs to the project or not. For that, we make use of the `runtime.earlyReturn()` function. This function allows us to short-circuit the current resolver invocation and **skip** the data source request. It means that the `GetItem` request to DynamoDB will not happen at all and the _response_ handler is also not called.
 
-Finally, if the request proceeds (i.e. the user is not an admin), we check if an item was returend from DynamoDB. If this is the case, it means that the user belongs to the project, so we return `ctx.prev.result` . In other words, we return the result from the _previous_ resolver, which is our “Get Task” resolver. And this is what will be returned to the client.
+Finally, on line 24-26, we check if an item was returned from DynamoDB. If no result is found, the user does not belong to the project, so we return an `unauthorized` error. Otherwise, we return `ctx.prev.result`. In other words, we return the result from the _previous_ resolver, which is our “Get Task” resolver (the task item). This is what will be returned to the client.
 
-On the other hand, if no result is found (the user does not belong to the project), we return an `unauthorized` error.
-
-We now have our authorizer pipeline function, but we still need to use it.
+We now have our authorizer function, but we still need to use it.
 
 Update the `getTask` and `listTasks` resolvers `definitions/appsync.ts` as follow:
 
-```tsx
+```tsx showLineNumbers
 'Query.getTask': {
   kind: 'PIPELINE',
   functions: [
@@ -185,11 +188,11 @@ Update the `getTask` and `listTasks` resolvers `definitions/appsync.ts` as follo
 
 What we did is to transform the unit resolvers into pipeline resolvers. We introduced the `authorizeUser` pipeline function.
 
-Under `getTask`, the autorization happens after fetching the task, because we first need to task entity to read the `projectId` from it. On the other hand, the `listTasks` query, comes with the `projectId` in the `[ctx.args.id](http://ctx.args.id)`, so we immediately check the authorzation before we even try to read the tasks from the table.
+Under `getTask`, the autorization happens after fetching the task, because we first need the task entity so we can read the `projectId` from it. On the other hand, the `listTasks` query, comes with the `projectId` in `ctx.args.id`, so we immediately check the authorzation before we even try to read the tasks from the table.
 
-We also need to rename `src/resolvers/Query.listTasks.ts` to `rc/resolvers/listTasks.ts` , and create a new `src/resolvers/Query.listTasks.ts` with the following content:
+We also need to rename `src/resolvers/Query.listTasks.ts` to `src/resolvers/listTasks.ts` , and create a new `src/resolvers/Query.listTasks.ts` with the following content:
 
-```tsx
+```tsx showLineNumbers
 import { Context } from '@aws-appsync/utils';
 import { QueryListTasksArgs } from '../types/schema';
 
@@ -204,17 +207,16 @@ export const response = (ctx: Context) => {
 };
 ```
 
-What happens here is that re created a before resolver. A before resolver does not connect to any data source, but is there to pre-process the incoming request from graphql. We use it in order to extract the project id from the arguments, and pass it to the next resolver (`authorizeUser`).
+What happens here is that re created a _before resolver_. A _before resolver_ does not connect to any data source, but is there to pre-process the incoming request from GraphQL. We use it in order to extract the project id from the arguments, and pass it to the next resolver (`authorizeUser`).
 
-\***\*\*\*\*\*\*\***Note:\***\*\*\*\*\*\*\***
-
-There are two eays to define a pipeline function in the serverless framework. One is to define it in `pipelineFunctions`, which is what we did earlier with `authorizeUser`. This is a way to create re-useable functions.
+:::note
+There are two ways to define a pipeline function in the serverless framework. One is to define it in `pipelineFunctions`, which is what we did earlier with `authorizeUser`. This is a way to create re-useable functions.
 
 The other one is to define it inline in the `functions` array. This is useful if the function is unique and you know it will not be reused.
+:::
 
-> **Pro Tip**: \***\*\*\*\*\***\*\*\*\*\***\*\*\*\*\***As a rule of thumb, I highly recommend to always create pipeline resolvers, even if you only have one function in the pipeline. This makes it a lot easier to add a new function if you need to later on without doing complex refactoring.
-
-Pipeline resolver with one function. This is perfectly valid and would have made adding `authorizeUser` a lot easier.
+:::tip
+As a rule of thumb, I highly recommend to always create pipeline resolvers, even if you only have one function in the pipeline. This makes it a lot easier to add a new function without doing complex refactoring if you need to later.
 
 ```tsx
 'Query.listTasks': {
@@ -228,6 +230,8 @@ Pipeline resolver with one function. This is perfectly valid and would have made
 },
 ```
 
+:::
+
 Now, deploy the API again.
 
 ```bash
@@ -238,7 +242,7 @@ Use your non-admin user to test the `getTask` and `listTasks` operations.
 
 ```graphql
 query ListTasks {
-  # Change the proejct id with your own project id
+  # Change the project id with your own project id
   listTasks(projectId: "1d49e592-e489-43cc-8ce5-d7d99a731cc4") {
     items {
       id

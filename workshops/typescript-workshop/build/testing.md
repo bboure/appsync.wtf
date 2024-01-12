@@ -5,23 +5,20 @@ sidebar_label: Testing
 
 # 3. Testing
 
-## 3.1. Create a user in Cognito
+## 3.1. Create a User in Cognito
 
-Let’s create a user in Amazon Cognito for us to authenticate against our API.
+We should now have a fully working API. Let's test it, but for that we need a user to authenticate with.
 
 To do so, connect to the AWS console, and go to [Amazon cognito](https://us-east-1.console.aws.amazon.com/cognito/v2/idp/user-pools).
 
-Open the Cognito user pool `AWS AppSync Workshop User Pool` and go to `App Integrations`. Under _App clients and analytics_, copy the clientId of `AWS AppSync Workshop Client`.
+Open the Cognito user pool name `AWS AppSync Workshop User Pool` and go to _App Integrations_. Under _App clients and analytics_, copy the clientId of the `AWS AppSync Workshop Client`.
 
-Then execute this command. Replace the following values:
+Then execute this command, replace the following values:
 
-`clientId` The client id you copied in Amazon Cognito
-
-`username` Pick a name for your user
-
-`password` Pick a password. Passwords must contain at least 8 characters, have at leat one number, one lowercase character, one uppercase character and one special character.
-
-`email` the email address of your user. The email must be real and valid. You will need to validate it in the following step.
+- `clientId` The client id you copied in Amazon Cognito
+- `username` Pick a name for your user
+- `password` Pick a password. Passwords must contain at least 8 characters, have at leat one number, one lowercase character, one uppercase character and one special character.
+- `email` the email address of your user. The email must be real and valid. You will need to validate it in the following step.
 
 ```bash
 aws cognito-idp sign-up --client-id "{clientId}" --username "{username}" --password "{password}" --user-attributes Name=email,Value="{email}"
@@ -33,23 +30,35 @@ example
 aws cognito-idp sign-up --client-id "3un93evcbfcc87jdp6jfc94ig0" --username "ben" --password "AppSync101!" --user-attributes Name=email,Value="ben@example.com"
 ```
 
+```json
+{
+  "UserConfirmed": false,
+  "CodeDeliveryDetails": {
+    "Destination": "b***@g***",
+    "DeliveryMedium": "EMAIL",
+    "AttributeName": "email"
+  },
+  "UserSub": "de42fece-e9c5-4c89-933e-7647ef8aa1f9"
+}
+```
+
 You should immediately receive an email with a verification code. Copy the code and execute the following command. Again, replace the appropriate values.
 
 ```bash
 aws cognito-idp confirm-sign-up --client-id "{clientId}" --username "{username}" --confirmation-code {verificationCode}
 ```
 
-If the command does not return any, error, it means it worked as expected.
+If the command does not return any error, it means it worked as expected.
 
 ## 3.2. Test Queries and Mutations
 
-Now that you have a user, it’s time to try a few Queries and Mutations. For that, you can use the GraphQl client of your choice (e.g. Postman), but I invite you to use [GraphBolt](https://graphbolt.dev). GraphBolt is a desktop app that helps developers build, test and debug AWS AppSync APIs. It comes with a GraphQl client that is specially tailored for AWS AppSync.
+Now that you have a user, it’s time to try a few Queries and Mutations. For that, you can use the GraphQL client of your choice (e.g. Postman), but I invite you to use [GraphBolt](https://graphbolt.dev). GraphBolt is a desktop app that helps developers build, test and debug AWS AppSync APIs. It comes with a GraphQL client that is specially tailored for AWS AppSync.
 
 If you prefer, you can also use the [AWS AppSync console](https://us-east-1.console.aws.amazon.com/appsync/home?region=us-east-1#/apis). Open the created API and go to the _Queries_ tab.
 
 Since we are starting from scratch, we don’t have any data in our Database. Let’s start by creating a Project first.
 
-First, login with your username and password. if you are using GraphBolt, you can do so by clicking on the padlock icon on the top right ([see documentation](https://docs.graphbolt.dev/graphql-client/authentication)). From the AWS AppSync console, click on **\*\*\*\***\*\*\*\***\*\*\*\***Login with User Pool**\*\*\*\***\*\*\*\***\*\*\*\***.
+First, login with your username and password. if you are using GraphBolt, you can do so by clicking on the padlock icon on the top right ([see documentation](https://docs.graphbolt.dev/graphql-client/authentication)). From the AWS AppSync console, click on **Login with User Pool**.
 
 And execute the following request.
 
@@ -81,7 +90,9 @@ If everything went well, you should see a result like this one:
 }
 ```
 
-Now, go to DynamoDB, and open the `Projects` table. (its name should be `appsync-typescript-workshop-dev-projects`).
+Now, go to DynamoDB, and open the `Projects` table. (its name should be `appsync-typescript-workshop-dev-projects`). You should see that the item was persisted.
+
+![DynamoDB Project Item](./dynamodb-projects-table.png)
 
 Do the same, and create a new Task. Don’t forget to replace `projectId` with the id of the project that was previously created. Also replace `ben` with your own username in `assignees`.
 
@@ -126,4 +137,4 @@ mutation CreateTask {
 }
 ```
 
-Great. I’ll let you play with other requests. Try to create a few more tasks, and then use the `Query.listTasks` to get all the tasks from the project. Also try to update and delete tasks using the `udpateTask` and `deleteTask` mutations.
+Great. I’ll let you play with other requests. Try to create a few more tasks and projects, then use the `Query.listTasks` to get all the tasks from a project. Also try to update and delete tasks using the `udpateTask` and `deleteTask` mutations.

@@ -4,58 +4,48 @@ sidebar_position: 1
 
 # Introduction
 
-Welcome! In this workshop, you will learn how to build a fully functional GraphQL API from scratch utilizing serverless technology such as AWS AppSync, Amazon DynamoDB and Amazon Cognito. We will cover aspects like authentication, authorization and real-time pub/sub.
+Welcome! In this workshop, you will learn how to build a fully functional GraphQL API from scratch utilizing serverless technology such as AWS AppSync, Amazon DynamoDB and Amazon Cognito. We will cover aspects like authentication, authorization and real-time pub/sub. To accomplish this, we will use TypeScript as our main programming language.
 
-To accomplish this, we will use TypeScript as our main programming language.
-
-The full workshop should take you around x hours to complete.
+The full workshop should take you around x [TBD] hours to complete.
 
 ## What will we build?
 
-We will create a collaborative task management system where users can create, assign, and update tasks and receive notifications and updates in real-time. We will use AWS AppSync to build a GraphQL API with pub/sub capabilities, and the built-in authentication and authorization features to control which operations users can do. Our data store will be Amazon DynamoDB.
+We will create a collaborative task management system where users can create projects and tasks, and receive notifications and updates in real-time. We will use AWS AppSync to build a GraphQL API with pub/sub capabilities, and the built-in authentication and authorization features to control which operations users can do. We will also use Amazon DynamoDB as our main data store, and Amazon Cognito for user authentication.
 
 ## GraphQL vs REST
 
 GraphQL is an open-source data query and manipulation language for APIs and a query runtime engine. It was created by Facebook in 2012 before being made publicly available in 2015.
 
-GraphQL and REST two ways to create APIs, however they differ in a few ways.
+GraphQL and REST are two ways to create APIs, however they differ in a few ways.
 
 **Reads and Writes**
 
-REST uses verbs to communicate which operation the client wants to perform (e.g. `GET` for reads, and `PUT`, `POST`, `DELETE` for writes).
+REST uses verbs to communicate which operation the client wants to perform (e.g. `GET` for reads, and `PUT`, `POST` or `DELETE` for writes).
 
-GraphQL uses _Queries_ for read operations and _Mutations_ for writes. It also disposes of _Subscriptions_ for real-time communication.
-
-**Real-time**
-
-REST does not have any real-time capability. If you need pub/sub for your API, you will need to rely on Websockets and build a completely new API in parallel.
-
-GraphQL supports three types of operations:
-
-- **Queries**: Used to read or fetch data from the data sources. Queries are analogous to HTTP `GET` requests in RESTful APIs.
-- **Mutations:** Used to write or update data. They are equivalent to `PUT`, `POST` and `DELETE` operations in REST.
-- **Subscriptions:** Used for real-time pub/sub communication with the backend.
+GraphQL uses _Queries_ for read operations and _Mutations_ for writes. In addition to that, it disposes of _Subscriptions_ for real-time communication.
 
 **Underfetching and Overfetching**
 
 In REST, **underfetching** occurs when multiple requests are needed to gather all required data. For example, if you need to fetch a user and his/her last 10 orders, you might need to send the following two requests: `GET /user/123`and `GET /orders?userId=123&limit=10&order=DESC`
 
-Sometimes, those requests might even need to be consecutive (i.e. if the second request requires a value coming from the first one). This leads to increased latency and network overhead.
+Sometimes, those requests might even need to be consecutive. i.e. if the second request requires a value coming from the first one. This leads to increased latency and network overhead.
 
-REST APIs also often send more data than necessary. In our previous example, you might only need the `name` , `avatar` and `email` of the user, but not the `address` and `biography`. REST will usually return all those fields. This is called **overfetching** and it increases the payload size unnecessarily.
+REST APIs also often send more data than necessary. In our previous example, you might only need the `name` , `avatar` and `email` of the user, but not the `address` and `biography`. REST usually does not offer control on that and returns all the available fields. This is called **overfetching** and it increases the payload size unnecessarily.
 
-GraphQL tries to solve those two issues as it allows the client to query the all the necessary data in a single query, and omit what is does not need.
+GraphQL tries to solve those two issues as it allows the client to query the all the necessary data in a single query, and omit what it doesn't need.
 
 Here is what a GraphQL request looks like
 
 ```graphql
 query {
-  # Get A user
+  # Get a user
+  # Only retrieve the name, avatar and email
   getUser(id: "123") {
     name
     avatar
     email
-    # order from the user
+    # last 10 orders of the user
+    # Only retrieve the id and date
     orders(limit: 10, order: "DESC") {
       id
       date
@@ -63,6 +53,12 @@ query {
   }
 }
 ```
+
+**Real-time**
+
+REST does not have any real-time capability. If you need pub/sub for your API, you will need to rely on Websockets and build a complete different API in parallel.
+
+As mentioned earlier, GraphQL supports Subscriptions. You will learn about subscription on the course of this workshop.
 
 ## What is AWS AppSync?
 

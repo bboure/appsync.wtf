@@ -8,10 +8,10 @@ sidebar_position: 2
 
 To follow this workshop, you will need:
 
-- [an AWS account](https://portal.aws.amazon.com/billing/signup#/start/email)
-- basic understanding of GraphQL and the Schema Definitions Language (SDL)
-- basic knowledge about AWS and its services (i.e. DynamoDB, Cognito)
-- some background with TypeScript
+- [An AWS account](https://portal.aws.amazon.com/billing/signup#/start/email)
+- Basic understanding of GraphQL and the Schema Definitions Language (SDL)
+- Basic knowledge about AWS and its services (i.e. DynamoDB, Cognito)
+- Some background with TypeScript
 
 ## Setup the project
 

@@ -56,7 +56,10 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
   scripts: [
     {
       src: 'https://plausible.io/js/script.js',
