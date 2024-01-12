@@ -1,6 +1,8 @@
-# Introduction
+---
+sidebar_position: 1
+---
 
-## Introduction
+# Introduction
 
 Welcome! In this workshop, you will learn how to build a fully functional GraphQL API from scratch utilizing serverless technology such as AWS AppSync, Amazon DynamoDB and Amazon Cognito. We will cover aspects like authentication, authorization and real-time pub/sub.
 
@@ -65,3 +67,9 @@ query {
 ## What is AWS AppSync?
 
 AppSync is a fully-managed and serverless service from AWS that allows developers to build scalable GraphQL APIs in no time without having to worry about maintaining servers. AWS AppSync seamlessly integrates with other AWS services such as Amazon DynamoDB, AWS Lambda, Amazon EventBridge, Amazon Aurora, Amazon OpenSearch and Amazon Cognito.
+
+## Will it cost me anything?
+
+This workshop involves deploying several resources into your own AWS account. While most of those services have a generous free tier, and are inexpensive after that, you might incur some charges.
+
+When this workshop is finished, we will also learn how to clean up and remove all the created resources to suppress any possible charges.

@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Project Overview
 
 ## Workspace Structure
