@@ -7,7 +7,7 @@ sidebar_label: Subscriptions
 
 AWS AppSync comes with built-in real-time pub/sub capabilities. We will use it to allow our users to receive notifications when a task is updated, or assigned.
 
-In GraphQL and AppSync, a subscription is a websocket connection that users can subscribe to and receive messages in real time. Subscriptions are triggered in response to a Mutation.
+In GraphQL and AppSync, a subscription is a websocket connection that users can subscribe to and receive messages in real time. Subscriptions are triggered in response to a mutation.
 
 ## 5.1. Task Updated
 
@@ -21,7 +21,7 @@ type Subscription {
 
 Here, we are creating a new `Subscription` type and we introduce the `onTaskUpdated` subscription. The subscription takes an argument (`id`) which will take the id of the task to listen for changes.
 
-We also use the AWS AppSync directive `@aws_subscribe` to specify which Mutation triggers the subscription. Here, it's `updateTask`. This means that each time a user will invoke the `updateTask` mutation on a task, any user listening for changes on it will be notified. With AWS AppSync, you do not need to do anything other than using the directive.
+We also use the AWS AppSync directive `@aws_subscribe` to specify which mutation triggers the subscription. Here, it's `updateTask`. This means that each time a user will invoke the `updateTask` mutation on a task, any user listening for changes on it will be notified. With AWS AppSync, you do not need to do anything other than using the directive.
 
 Let's try it. First, we need to deploy our changes.
 
@@ -29,7 +29,7 @@ Let's try it. First, we need to deploy our changes.
 npx sls deploy
 ```
 
-When it's done, try to execute the following Subscription. Don't forget to change the task `id` to the id of one of your tasks.
+When it's done, try to execute the following subscription. Don't forget to change the task `id` to the id of one of your tasks.
 
 ```graphql
 subscription OnTaskUpdated {
@@ -77,8 +77,10 @@ Let's add a new subscription to illustrate this use case. Add the `onTaskAssigne
 ```graphql
 type Subscription {
   onUpdateTask(id: ID!): Task @aws_subscribe(mutations: ["updateTask"])
+  // highlight-start
   onTaskAssigned(minPriority: Int): Task
     @aws_subscribe(mutations: ["createTask"])
+  // highlight-end
 }
 ```
 

@@ -58,9 +58,9 @@ If you prefer, you can also use the [AWS AppSync console](https://us-east-1.cons
 
 Since we are starting from scratch, we don’t have any data in our Database. Let’s start by creating a Project first.
 
-First, login with your username and password. if you are using GraphBolt, you can do so by clicking on the padlock icon on the top right ([see documentation](https://docs.graphbolt.dev/graphql-client/authentication)). From the AWS AppSync console, click on **Login with User Pool**.
+Login with your username and password. if you are using GraphBolt, you can do so by clicking on the padlock icon on the top right ([see documentation](https://docs.graphbolt.dev/graphql-client/authentication)). From the AWS AppSync console, click on **Login with User Pool**. In both cases, you will need to select the user pool, client and enter your username and password.
 
-And execute the following request.
+Execute the following request.
 
 ```graphql
 mutation CreateProject {

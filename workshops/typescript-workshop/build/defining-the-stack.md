@@ -28,7 +28,9 @@ resolvers: {},
 
 ## 1.2. Cognito User Pool
 
-Our API uses a Cognito User Pool as its default authorizer (lines 3-10). Let’s define it too. In `definitions/cognito.ts`, add this code
+Our API uses a Cognito User Pool as its default authorizer (lines 3-10 in the API definition). Let’s define it too.
+
+In `definitions/cognito.ts`, add this code.
 
 ```tsx showLineNumbers
 // 1.2. Define the Cognito User Pool
@@ -67,7 +69,7 @@ Run the following command.
 npx sls deploy
 ```
 
-If everything went well, you should see and output similar to this:
+If everything went well, you should see an output similar to this:
 
 ```shell
 Deploying appsync-typescript-workshop to stage dev (us-east-1)

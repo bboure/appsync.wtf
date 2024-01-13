@@ -5,7 +5,7 @@ sidebar_label: Data Sources and Resolvers
 
 # 2. Defining Data Sources and Resolvers
 
-We now have a deployed API, but it does not do anything yet. We don’t have databases and we haven’t defined data sources, nor resolvers.
+We now have a deployed API, but it does not do anything yet. In this section we will create our DynamoDB tables and allow our API to interact with them.
 
 ## 2.1. DynamoDB Tables
 
@@ -107,17 +107,17 @@ ProjectUsers: {
 },
 ```
 
-This codes defined three DynamoDB tables.
+This codes defines three DynamoDB tables.
 
 The first one `Tasks` will store the tasks of our application. `Projects` will keep track of projects, and `ProjectUsers` will store the relation between projects and users.
 
-Note that we don’t have a `Users` table. Users live in Cognito, and we won’t need to store then in DynamoDB in this project.
+Note that we don’t have a `Users` table. Users live in Cognito, and we won’t need to store them in DynamoDB in this project.
 
 ## 2.2 Data Sources
 
 We now have our data stores defined, but we still need to link them to out GraphQL API.
 
-To do so, AWS AppSync uses Data Sources. Data Sources are like adapters that connect to the different data stores. Since we have three DynamoDB table, we will need 3 data source definitions. Each is of type `AMAZON_DYNAMODB` and references its corresponding DynamoDB table that we defined in the previous section.
+To do so, AWS AppSync uses Data Sources. Data Sources are like adapters that connect to the different data stores. Since we have three DynamoDB tables, we will need 3 data source definitions of type `AMAZON_DYNAMODB`. Each references its corresponding DynamoDB table that we defined in the previous section.
 
 Open `definitions/appsync.ts` and inside `dataSources`, add the following code:
 
@@ -236,7 +236,7 @@ While the changes are being deployed, let’s have a look at the resolvers code 
 
 ## 2.5. Resolvers
 
-To make things smoother for you, I have already written all the necessary resolvers. Let’s have a look and understand how they are made.
+To make things smoother for you, I have already written all the necessary resolvers. Let’s have a look and understand how they work.
 
 For example, let’s take `getTask` (`src/resolvers/Query.getTask.ts`)
 
@@ -267,15 +267,21 @@ Resolvers are composed of two functions, also known as _handlers._
 
 The _request_ handler is used to generate the request to the data source. In this case, it’s a DynamoDB request and we want to execute a `GetItem` operation.
 
-The `@aws-appsync/utils/dynamodb` package comes with a bunch of useful functions to help us generate DynamoDB requests. Here, we are using `get` and we are passing it the `key` of the item we want to retrieve. It contains the name of the key attribute (`id`) and its value which is coming from the GraphQL query as an argument (`ctx.args.id`).
+The `@aws-appsync/utils/dynamodb` package comes with a bunch of useful functions to help us generate DynamoDB requests. Here, we are using `get` and we are passing it the `key` of the item we want to retrieve. It contains the name of the key attribute (`id`) and its value which is coming from the GraphQL query as an argument. `ctx.args` is an object that corresponds to the GraphQL arguments as defined in the schema.
+
+```graphql
+type Query {
+  getTask(id: ID!): Task!
+}
+```
 
 For more information about all the DynamoDB helpers, check the [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/built-in-modules-js.html#built-in-ddb-modules).
 
-The _response_ handler receives the data from the data source. This is where you can transform it and map it to the GraphQL schema. Here we just return the data received from DynamoDB in `crx.result`. Before that, we check that the item exists, and if it does not we return an error with `util.error()`
+The _response_ handler receives the data from the data source. This is where you can transform it and map it to the GraphQL schema. Here we just return the data received from DynamoDB in `crx.result`. Before that, we check that the item exists, and if it does not we return an error with `util.error()`.
 
 Both the _request_ and _response_ handlers receive an object as first argument (called the context). The `context` object contains information about the incoming request (input arguments, identity, etc.) as well as the interaction with the data source (e.g. the result, errors that might have ocurred, etc) (only in _response_). You can learn more about it in the [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference-js.html).
 
-## 2.6. TypeScript in resolvers
+## 2.6. TypeScript in Resolvers
 
 As we commented earlier in this workshop, we wrote resolvers in TypeScript. We also learned about GraphQL codegen, and we generated TypeScript types from our GraphQL schema. Keen eyes might have spotted that we used those types in our resolvers. For example:
 
@@ -287,7 +293,7 @@ export const request = (ctx: Context<QueryGetTaskArgs>) => {
 
 `QueryGetTaskArgs` is an auto-generated type that represents the input arguments of the `getTask` Query.
 
-You might also have noticed the `DBTask` type in the same resolver. This is a custom type that I created and represents the DynamoDb `Task` entity. This is because data source entities and GraphQL Types don’t always have a one to one correspondence. For example, the `Task` type in GraphQL has a `project` field which represents the Project the task belongs to. Project has its own entity and data store, so it is excluded from the `DBTask` type. Similarly, `DBTask` has a `projectId` which is not present in the schema.
+You might also have noticed the `DBTask` type in the same resolver. This is a custom type that I created and represents the DynamoDb `Task` entity. This is because data source entities and GraphQL types don’t always have a one to one correspondence. For example, the `Task` type in GraphQL has a `project` field which represents the Project the task belongs to. Project has its own entity and data store, so it is excluded from the `DBTask` type. Similarly, `DBTask` has a `projectId` which is not present in the schema.
 
 If you look in the schema (`schema/schema.graphql`), you will notice that I used `interface`s. For example, `ITask`.
 

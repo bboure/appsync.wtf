@@ -5,7 +5,7 @@ sidebar_label: Authorization
 
 # 4. Authorization
 
-## 4.1. Limit write privileges to admins
+## 4.1. Limit Write Privileges to Admins
 
 In our current situation, any user is capable of creating, updating and deleting tasks and projects. But what if we wanted to only allow some users (i.e. admins) to execute those actions?
 
@@ -28,7 +28,7 @@ type Mutation {
 }
 ```
 
-Here, we make use of the `@aws_auth` directive, which specifies that only users in the `Admin` group are allowed to call these mutations.
+Here, we make use of the `@aws_auth` directive, which specifies that only users in the Cognito `Admin` group are allowed to call these mutations.
 
 Finally, deploy the API again.
 
@@ -74,9 +74,9 @@ Then, try to login using your new user, and execute the mutation again. This tim
 
 ## 4.2. Limit Tasks to Project Users
 
-Now that only admins can perform write operations on tasks, we would also like to prevent users from seeing tasks of for projects they are in.
+Now that only admins can perform write operations on tasks, we would also like to prevent users from seeing tasks of for projects they are not in.
 
-In this case, we cannot use a directive since projects are not the same thing as groups. Projects and user associations live in DynamoDB.
+In this case, we cannot use a directive. Projects and user associations live in DynamoDB, so we will have to write the logic ourselves.
 
 To achieve our goal, we can use pipeline resolvers.
 
@@ -100,7 +100,7 @@ pipelineFunctions: {
     dataSource: 'projectUsers',
     code: 'src/resolvers/authorizeUser.ts',
   },
- },
+},
 ```
 
 This defines a pipeline function. It uses the `projectUsers` data source which connects to the DynamoDB table of the same name.
@@ -151,12 +151,12 @@ We also do a few more pre-checks:
 
 On lines 7-9, we use `isCognitoIdentity`, a custom function that I created. It serves two purposes.
 
-1. It makes sure that the current request is invoked using a Cognito user. Since, AppSync supports more than one authorizer, we need to make sure that we are using Cognito before we proceed. If it’s not the case, we always reject the request with `unauthorized()`
+1. It makes sure that the current request is invoked using a Cognito user. Since, AppSync supports more than one authorizer, we need to make sure that the current request is authorized by Cognito before we proceed. If it’s not the case, we always reject the request with `unauthorized()`
 2. It serves as a TypeScript type guard by making sure that `ctx.identity` is of type `AppSyncIdentityCognito`. This avoids TypeScript from complaining that `username` might not exist.
 
-On lines 11-13, we also check that the current user is not in the `Admins` group. If the user is an admin, we always want the request to proceed and we don't care if the user belongs to the project or not. For that, we make use of the `runtime.earlyReturn()` function. This function allows us to short-circuit the current resolver invocation and **skip** the data source request. It means that the `GetItem` request to DynamoDB will not happen at all and the _response_ handler is also not called.
+On lines 11-13, we also check that the current user is not in the `Admins` group. If the user is an admin, we always want the request to proceed and we don't care if the user belongs to the project or not. For that, we make use of the `runtime.earlyReturn()` function. This function allows us to short-circuit the current resolver invocation and **skip** the data source request. It means that the `GetItem` request to DynamoDB will not happen at all and the _response_ handler is also not called. The value in passed to `earlyReturn()` is the value passed on to the next resolver in the pipeline, or as the GraphQL response if it's the last one in line.
 
-Finally, on line 24-26, we check if an item was returned from DynamoDB. If no result is found, the user does not belong to the project, so we return an `unauthorized` error. Otherwise, we return `ctx.prev.result`. In other words, we return the result from the _previous_ resolver, which is our “Get Task” resolver (the task item). This is what will be returned to the client.
+Finally, on line 24-26, we check if an item was returned from DynamoDB. If no result is found, the user does not belong to the project, so we return an `unauthorized` error. Otherwise, we return `ctx.prev.result`. In other words, we return the result from the _previous_ resolver, which is our “Get Task” resolver. This is what will be returned to the client.
 
 We now have our authorizer function, but we still need to use it.
 
@@ -186,7 +186,7 @@ Update the `getTask` and `listTasks` resolvers `definitions/appsync.ts` as follo
 },
 ```
 
-What we did is to transform the unit resolvers into pipeline resolvers. We introduced the `authorizeUser` pipeline function.
+What we did is to transform the unit resolvers into pipeline resolvers, and we introduced the `authorizeUser` pipeline function.
 
 Under `getTask`, the autorization happens after fetching the task, because we first need the task entity so we can read the `projectId` from it. On the other hand, the `listTasks` query, comes with the `projectId` in `ctx.args.id`, so we immediately check the authorzation before we even try to read the tasks from the table.
 
@@ -207,12 +207,16 @@ export const response = (ctx: Context) => {
 };
 ```
 
-What happens here is that re created a _before resolver_. A _before resolver_ does not connect to any data source, but is there to pre-process the incoming request from GraphQL. We use it in order to extract the project id from the arguments, and pass it to the next resolver (`authorizeUser`).
+What happens here is that we created a _before pipeline resolver_ (`request`). A _before pipeline resolver_ does not connect to any data source, but is there to pre-process the incoming request from GraphQL. It is executed before the very first function in the pipeline. We use it in order to extract the project id from the arguments, and pass it to the next resolver (`authorizeUser`).
+
+There is also an _after pipeline resolver_ (`response`) that happens after all the functions been executed. Here, we just return the result from the last function.
+
+To learn more about pipeline resolvers, check the [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/resolver-reference-overview-js.html#anatomy-of-a-pipeline-resolver-js).
 
 :::note
 There are two ways to define a pipeline function in the serverless framework. One is to define it in `pipelineFunctions`, which is what we did earlier with `authorizeUser`. This is a way to create re-useable functions.
 
-The other one is to define it inline in the `functions` array. This is useful if the function is unique and you know it will not be reused.
+The other one is to define it inline in the `functions` array. This is useful if the function is unique and you know it will not be reused. This is what we did with `src/resolvers/listTasks.ts`
 :::
 
 :::tip
@@ -283,7 +287,7 @@ You should get an error.
 }
 ```
 
-Switch to your admin user, and add the non-admin user to the project.
+Switch to your admin user, and use `addUserToProject` mutation to add that user to the project.
 
 ```graphql
 mutation AddUserToProject {
@@ -299,4 +303,4 @@ mutation AddUserToProject {
 }
 ```
 
-Then switch back to the non-admin user again and try executing the `getTask` and `listTasks` queries. This time, you should get access to the resources.
+Then switch back to the non-admin user again and try executing the `getTask` and `listTasks` queries again. This time, you should get access to the resources.
