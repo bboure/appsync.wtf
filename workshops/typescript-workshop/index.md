@@ -1,8 +1,9 @@
 ---
 sidebar_position: 1
+sidebar_label: Introduction
 ---
 
-# Introduction
+# Build a serverless GraphQL API with TypeScript
 
 Welcome! In this workshop, you will learn how to build a fully functional GraphQL API from scratch utilizing serverless technology such as AWS AppSync, Amazon DynamoDB and Amazon Cognito. We will cover aspects like authentication, authorization and real-time pub/sub. To accomplish this, we will use TypeScript as our main programming language.
 

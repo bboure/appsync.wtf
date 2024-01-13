@@ -11,7 +11,7 @@ In GraphQL and AppSync, a subscription is a websocket connection that users can 
 
 ## 5.1. Task Updated
 
-Open the schema file (), and add the following code.
+Open the schema file (`schema/schema.graphql`), and add the following code.
 
 ```graphql
 type Subscription {
@@ -19,17 +19,17 @@ type Subscription {
 }
 ```
 
-Here, we are creating a new `Subscription` type and we introduce the `onTaskUpdated` subscription. The subscription takes an argument (`id`) which is the task to listen for changes.
+Here, we are creating a new `Subscription` type and we introduce the `onTaskUpdated` subscription. The subscription takes an argument (`id`) which will take the id of the task to listen for changes.
 
-We also use the AWS AppSync directive `@aws_subscribe` to specify which Mutation triggers the subscription. Here, it’s `updateTask`. This means that each time a user will invoke the `updateTask` mutation, any user listening for changes on that task will be notified. With AWS AppSync, you do not need to do anything else than using the directive.
+We also use the AWS AppSync directive `@aws_subscribe` to specify which Mutation triggers the subscription. Here, it's `updateTask`. This means that each time a user will invoke the `updateTask` mutation on a task, any user listening for changes on it will be notified. With AWS AppSync, you do not need to do anything other than using the directive.
 
-Let’s try it. First, we need to deploy our changes.
+Let's try it. First, we need to deploy our changes.
 
 ```bash
 npx sls deploy
 ```
 
-When it’s done, try to execute the following Subscription. Don’t forget to change the task `id` to the id of one of your tasks.
+When it's done, try to execute the following Subscription. Don't forget to change the task `id` to the id of one of your tasks.
 
 ```graphql
 subscription OnTaskUpdated {
@@ -68,11 +68,11 @@ mutation UpdateTask {
 
 If you come back to the tab where the subscription is running, you should see an incoming message with the task that was updated.
 
-## 5.2. Task assigned subscriptions
+## 5.2. Task Assigned Subscriptions
 
-We just saw how to create a simple subscription. However, sometimes you need some advanced use cases. AWS AppSync comes with a feature called enhanced subscription filtering. It allows you to create subscriptions with advanced filters.
+We just saw how to create a simple subscription. However, sometimes you need advanced use cases. AWS AppSync comes with a feature called [enhanced subscription filtering](https://docs.aws.amazon.com/appsync/latest/devguide/aws-appsync-real-time-enhanced-filtering.html). It allows you to create subscriptions with advanced filters.
 
-Let’s add a new subscription to illustrate this use case. Add the `onTaskAssigned` subscription.
+Let's add a new subscription to illustrate this use case. Add the `onTaskAssigned` subscription.
 
 ```graphql
 type Subscription {
@@ -82,12 +82,11 @@ type Subscription {
 }
 ```
 
-Enhanced filtering require some custom code that we write in a resolver. However, this resolver does not need to access any data source, it is just there to execute some custom code. Luckily, AWS AppSync allows us to do so with a special kind of data source: `NONE`
+Enhanced filtering requires some custom code that we write in a resolver. However, this resolver does not need to access any data source, it is just there to configure the filtering. Luckily, AWS AppSync allows us to do so with a special kind of data source: `NONE`
 
-Let’s create a “none” data source. In `definitions/appsync.ts`, add the following code inside `dataSources`
+Let's create a *none* data source. In `definitions/appsync.ts`, add the following code inside `dataSources`
 
 ```tsx
-
 none: {
   type: 'NONE',
 },
@@ -105,7 +104,7 @@ And, in `resolvers`
 
 Finally, create the `src/resolvers/Subscription.onTaskAssigned.ts` file
 
-```tsx
+```tsx showLineNumbers
 import {
   Context,
   SubscriptionFilterObject,
@@ -141,23 +140,23 @@ export const response = (ctx: Context<SubscriptionOnTaskAssignedArgs>) => {
 };
 ```
 
-Let’s pause to analize what is going on.
+Let's pause to analyze what is going on.
 
-In the **\*\*\***request**\*\*\*** handler, we are checking that the current request comes from a Cognito user. This is because we want the current user to receive notifications for tasks assigned to himself. Clients that are not users, should not be allowed to use this subscription, and it would also not make sense.
+In the **request** handler, we are checking that the current request comes from a Cognito user (lines 14-16). This is because we want the current user to receive notifications for tasks assigned to himself. Requests coming from non-users (e.g. API keys), should not be allowed to use this subscription, and it would also not make sense.
 
-Then, we start by creating a filter rule. The rule specifies that the task’s `assignees` should contain the current user’s name for it to apply.
+Then, we start by creating a filter rule (18-22). The rule specifies that the task's `assignees` should contain the current user's username for it to apply.
 
-Finally, our subscription has an optional `minProperty` argument. If the argument is present, we use it to add a rule that requires the task’s priority to be of at least the specified value. Tasks with a lower priority would not invoke the subscription. This can be user by users to avoid receiving unnecessary noisy notifications.
+Finally, our subscription has an optional `minProperty` argument. If the argument is present, we use it to add a rule that requires the task's priority to be of at least the specified value (line 26). Tasks with a lower priority would not invoke the subscription. This can be user by users to avoid receiving unnecessary noisy notifications.
 
-We finish by applying the subscription filter with the `extensions.setSubscriptionFilter()` helper function.
+We finish by applying the subscription filter with the `extensions.setSubscriptionFilter()` helper function on line 30.
 
-Let’s deploy again and test.
+Let's deploy again and test.
 
 ```bash
 npx sls deploy
 ```
 
-With your standard user, try to execute the following subscription, using the non-admin user.
+With your standard user (non admin), try to execute the following subscription.
 
 ```graphql
 subscription OnTaskAssigned {
@@ -173,7 +172,7 @@ subscription OnTaskAssigned {
 }
 ```
 
-And invoke the `creteTask` Mutation with your admin user. Change the `assignees` to your non-admin user.
+Then, invoke the `creteTask` Mutation with your admin user. Change the `assignees` to match your non-admin user.
 
 ```graphql
 mutation CreateTask {
