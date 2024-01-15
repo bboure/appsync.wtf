@@ -15,7 +15,7 @@ To follow this workshop, you will need:
 
 High-level understanding the [Serverless Framework](https://www.serverless.com/) might also be useful.
 
-## Clone the project
+## Clone the Project
 
 Ready? Let’s get started.
 
@@ -47,7 +47,7 @@ The working directory should look like this.
     └── utils.ts
 ```
 
-- `codegen.ts` contains GraphQL codegen configuration.
+- `codegen.ts` contains GraphQL codegen configuration (More on that below).
 - `definitions` is a directory containing files with Serverless Framework definitions.
 - `schema` is a directory containing the schema for our API.
 - `serverless.ts` is the entry point of our Serverless Framework definitions.
@@ -71,7 +71,7 @@ In our project, we installed and configured eslint (`.eslintrc.json`). This give
 
 The AppSync team provides a useful eslint plugin that warns us about invalid usages: [@aws-appsync/eslint-plugin](https://www.npmjs.com/package/@aws-appsync/eslint-plugin)
 
-We are using the plugin in this project, but because we only want it to be active inside resolvers code, we use an additional eslint config file that we placed in `src/resolvers/.eslintrc.json`. This way, those special rules only apply to resolvers, and not the rest of our codebase (for example, Lambda functions).
+We are using the plugin in this project, but because we only want it to be active inside resolvers code, we use an additional eslint config file that we placed in the `src/resolvers` directory. This way, those special rules only apply to resolvers, and not the rest of our codebase (for example, Lambda functions).
 
 ```json
 {
