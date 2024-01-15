@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
-image: ./project-overview.png
+image: ./card.png
 ---
 
 # Build a GraphQL API with AWS AppSync and TypeScript
