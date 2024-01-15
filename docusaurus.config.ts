@@ -56,7 +56,10 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
   scripts: [
     {
       src: 'https://plausible.io/js/script.js',
@@ -64,7 +67,17 @@ const config: Config = {
       defer: true,
     },
   ],
-
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'typescript-workshop',
+        path: 'workshops/typescript-workshop',
+        routeBasePath: 'workshops/typescript-workshop',
+        sidebarPath: './sidebars/workshops/typescript-workshop.ts',
+      },
+    ],
+  ],
   themeConfig: {
     // Replace with your project's social card
     image: 'img/card.png',
