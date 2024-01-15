@@ -90,6 +90,8 @@ As mentioned earlier, GraphQL supports Subscriptions. You will learn about subsc
 
 AppSync is a fully-managed and serverless service from AWS that allows developers to build scalable GraphQL APIs in no time without having to worry about maintaining servers. AWS AppSync seamlessly integrates with other AWS services such as Amazon DynamoDB, AWS Lambda, Amazon EventBridge, Amazon Aurora, Amazon OpenSearch and Amazon Cognito.
 
+![AWS AppSync overview](appsync-overview.png)
+
 ## Will it cost me anything?
 
 This workshop involves deploying several resources into your own AWS account. While most of those services have a generous free tier, you might incur some charges. However those services are inexpensive at this scale and cost should remain moderate.
