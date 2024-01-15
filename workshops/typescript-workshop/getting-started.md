@@ -15,9 +15,9 @@ To follow this workshop, you will need:
 
 High-level understanding the [Serverless Framework](https://www.serverless.com/) might also be useful.
 
-## Clone the Project
+Ready? Let's get started.
 
-Ready? Let’s get started.
+## Clone the Project
 
 First, we will clone the project and get familiar with it. Run the following command and open it in your favorite IDE.
 
@@ -61,7 +61,7 @@ If you want to learn more about types, fields and GraphQL schemas, go to the [G
 
 ## TypeScript
 
-AWS AppSync allows us to write resolvers in JavaScript. This means that, in order to have better auto-complete capabilities, as well as safeguarding us from making mistakes, we can also use TypeScript.
+AWS AppSync allows us to write resolvers in JavaScript. This means that, in order to have better auto-complete capabilities as well as safeguarding us from making mistakes, we can also use TypeScript.
 
 By default, AWS AppSync does not support TypeScript. Instead, it supports a [limited flavour of JavaScript](https://blog.graphbolt.dev/everything-you-should-know-about-the-appsync-javascript-pipeline-resolvers). Luckily, the serverless-appsync-plugin automatically [transpiles and bundles TypeScript into AppSync-compatible Javascript](https://github.com/sid88in/serverless-appsync-plugin/blob/master/doc/general-config.md#Esbuild) code, out of the box.
 
@@ -69,7 +69,7 @@ By default, AWS AppSync does not support TypeScript. Instead, it supports a [lim
 
 In our project, we installed and configured eslint (`.eslintrc.json`). This gives us linting capabilities about good practices when writing code in TypeScript. However, AppSync does not support all of “standard” JavaScript/TypeScript features.
 
-The AppSync team provides a useful eslint plugin that warns us about invalid usages: [@aws-appsync/eslint-plugin](https://www.npmjs.com/package/@aws-appsync/eslint-plugin)
+The AppSync team provides a useful eslint plugin that warns us about invalid usage: [@aws-appsync/eslint-plugin](https://www.npmjs.com/package/@aws-appsync/eslint-plugin)
 
 We are using the plugin in this project, but because we only want it to be active inside resolvers code, we use an additional eslint config file that we placed in the `src/resolvers` directory. This way, those special rules only apply to resolvers, and not the rest of our codebase (for example, Lambda functions).
 
@@ -81,9 +81,9 @@ We are using the plugin in this project, but because we only want it to be activ
 
 ## Codegen
 
-[GraphQL Codegen](https://the-guild.dev/graphql/codegen) is an open-source library that provides tools to generate code from GraphQL schemas. In this project, we will use it in order to generate the TypeScript types of our API.
+[GraphQL Codegen](https://the-guild.dev/graphql/codegen) is an open-source library that provides tools to generate code from GraphQL schemas. In this project, we will use it in order to generate the TypeScript types of our API. It uses the definition in `codegen.ts`.
 
-It uses the definition in `codegen.ts`
+Run the following command.
 
 ```bash
 npm run codegen

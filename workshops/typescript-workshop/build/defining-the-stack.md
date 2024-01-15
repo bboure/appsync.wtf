@@ -11,7 +11,7 @@ We will start by defining the basic resources for our API: the API itself and th
 
 ## 1.1. AppSync API
 
-Our stack uses the [serverless-appsync-plugin](https://github.com/sid88in/serverless-appsync-plugin). Let’s start by adding the required definitions for our API. We will give our API a name, a schema and a default authentication method.
+Our stack uses the [serverless-appsync-plugin](https://github.com/sid88in/serverless-appsync-plugin). Let's start by adding the required definitions for our API. We will give our API a name, a schema and a default authentication method.
 
 Open the `definitions/appsync.ts` file and add the following code under _`1.1. Define the AppSync API`_
 
@@ -32,7 +32,7 @@ resolvers: {},
 
 ## 1.2. Cognito User Pool
 
-Our API uses a Cognito User Pool as its default authorizer (lines 3-10 in the API definition). Let’s define it too.
+Our API uses a Cognito User Pool as its default authorizer (lines 3-10 in the API definition). Let's define it too.
 
 In `definitions/cognito.ts`, add this code.
 
@@ -65,7 +65,7 @@ This will create a Cognito User Pool and a User Pool Client.
 
 ## 1.3. First deployment
 
-We have defined our API and Cognito user pool. It’s now time for our first deployment.
+We have defined our API and Cognito user pool. It's now time for our first deployment.
 
 Run the following command.
 

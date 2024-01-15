@@ -68,7 +68,7 @@ Sometimes, those requests might even need to be consecutive. i.e. if the second 
 
 REST APIs also often send more data than necessary. In our previous example, you might only need the `name` , `avatar` and `email` of the user, but not the `address` and `biography`. REST usually does not offer control on that and returns all the available fields. This is called **overfetching** and it increases the payload size unnecessarily.
 
-GraphQL tries to solve those two issues as it allows the client to query the all the necessary data in a single query, and omit what it doesn't need.
+GraphQL tries to solve those two issues as it allows the client to query all the necessary data in a single query, and omit what it doesn't need.
 
 Here is what an equivalent GraphQL request might look like.
 

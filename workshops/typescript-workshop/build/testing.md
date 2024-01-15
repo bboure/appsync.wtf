@@ -52,11 +52,11 @@ If the command does not return any error, it means it worked as expected.
 
 ## 3.2. Test Queries and Mutations
 
-Now that you have a user, it’s time to try a few Queries and Mutations. For that, you can use the GraphQL client of your choice (e.g. Postman), but I invite you to use [GraphBolt](https://graphbolt.dev). GraphBolt is a desktop app that helps developers build, test and debug AWS AppSync APIs. It comes with a GraphQL client that is specially tailored for AWS AppSync.
+Now that you have a user, it's time to try a few Queries and Mutations. For that, you can use the GraphQL client of your choice (e.g. Postman), but I invite you to use [GraphBolt](https://graphbolt.dev). GraphBolt is a desktop app that helps developers build, test and debug AWS AppSync APIs. It comes with a GraphQL client that is specially tailored for AWS AppSync.
 
 If you prefer, you can also use the [AWS AppSync console](https://us-east-1.console.aws.amazon.com/appsync/home?region=us-east-1#/apis). Open the created API and go to the _Queries_ tab.
 
-Since we are starting from scratch, we don’t have any data in our Database. Let’s start by creating a Project first.
+Since we are starting from scratch, we don't have any data in our Database. Let's start by creating a Project first.
 
 Login with your username and password. if you are using GraphBolt, you can do so by clicking on the padlock icon on the top right ([see documentation](https://docs.graphbolt.dev/graphql-client/authentication)). From the AWS AppSync console, click on **Login with User Pool**. In both cases, you will need to select the user pool, client and enter your username and password.
 
@@ -94,7 +94,7 @@ Now, go to DynamoDB, and open the `Projects` table. (its name should be `appsync
 
 ![DynamoDB Project Item](./dynamodb-projects-table.png)
 
-Do the same, and create a new Task. Don’t forget to replace `projectId` with the id of the project that was previously created. Also replace `ben` with your own username in `assignees`.
+Do the same, and create a new Task. Don't forget to replace `projectId` with the id of the project that was previously created. Also replace `ben` with your own username in `assignees`.
 
 ```graphql
 mutation CreateTask {
@@ -137,4 +137,4 @@ mutation CreateTask {
 }
 ```
 
-Great. I’ll let you play with other requests. Try to create a few more tasks and projects, then use the `Query.listTasks` to get all the tasks from a project. Also try to update and delete tasks using the `udpateTask` and `deleteTask` mutations.
+Great. I'll let you play with other requests. Try to create a few more tasks and projects, then use the `Query.listTasks` to get all the tasks from a project. Also try to update and delete tasks using the `udpateTask` and `deleteTask` mutations.
