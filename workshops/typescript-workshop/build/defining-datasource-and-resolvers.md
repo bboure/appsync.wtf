@@ -216,7 +216,7 @@ Open the `definitions/appsync.ts` file and add the following code inside `resolv
 
 The key specifies the GraphQL type and field that the resolver is attached to. For example, for `Query.getTask` , it means that the resolver is attached to the `getTask` field of the `Query` type. `Query` and `Mutation` are two special types in GraphQL that correspond to queries and mutations, respectively.
 
-Note that you can attach a resolver to custom types too. For example, `Task.project` (lines 27-31) defines the resolver for a tasks’s Project.
+Note that you can attach a resolver to a field of custom types too. For example, `Task.project` (lines 27-31) defines the resolver for a tasks’s Project.
 
 The value represents the definition of the resolver.
 

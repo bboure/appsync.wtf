@@ -1,17 +1,18 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
+image: ./project-overview.png
 ---
 
 # Build a GraphQL API with AWS AppSync and TypeScript
 
-Welcome! In this workshop, you will learn how to build a fully functional GraphQL API from scratch utilizing serverless technology such as AWS AppSync, Amazon DynamoDB and Amazon Cognito. We will cover aspects like authentication, authorization and real-time pub/sub. To accomplish this, we will use TypeScript as our main programming language, and the Serverless Framework for Infrastructure as Code (IaC).
+Welcome! In this workshop, you will learn how to build a fully functional GraphQL API from scratch utilizing serverless technology such as AWS AppSync, Amazon DynamoDB and Amazon Cognito. We will cover aspects like authentication, authorization and real-time pub/sub. To accomplish this, we will use TypeScript as our main programming language, and the Serverless Framework for Infrastructure as Code (IaC). We will use the direct-integration between AppSync and DynamoDB (zero Lambda function required).
 
 The full workshop should take you about 2 hours to complete.
 
 ## About the Instructor
 
-<img src="/img/benoit-boure.jpeg" width="150" alt="Benoît Bouré" style={{float: 'left', marginRight: 16, borderRadius: 8 }}/>
+<img src="/img/benoit-boure.jpeg" alt="Benoît Bouré" style={{float: 'left', marginRight: 16, borderRadius: 8 }}/>
 
 Hi 👋, I'm Benoit, a passionate serverless developer with a deep love for serverless technology. As an AWS Community Builder, I actively contribute to the community and share my expertise. You can often hear me promoting AWS AppSync, one of my favourite AWS services. As such, I am the core maintainer of the [serverless-appsync-plugin](https://github.com/sid88in/serverless-appsync-plugin). I am also the creator of this website ([appsync.wtf](https://appsync.wtf)) and [GraphBolt](https://graphbolt.dev). My journey involves creating engaging content about serverless, aiming to simplify and share knowledge within the tech community. Connect with me on Twitter/X [@Benoit_Boure](https://twitter.com/Benoit_Boure).
 
