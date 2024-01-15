@@ -13,6 +13,8 @@ The full workshop should take you about 1 hour to complete.
 
 We will create a collaborative task management system where users can create projects and tasks, and receive notifications and updates in real-time. We will use AWS AppSync to build a GraphQL API with pub/sub capabilities, and the built-in authentication and authorization features to control which operations users can do. We will also use Amazon DynamoDB as our main data store, and Amazon Cognito for user authentication.
 
+![Project Overview](project-overview.png)
+
 For reference, here are the types that will serve as our base.
 
 ```graphql

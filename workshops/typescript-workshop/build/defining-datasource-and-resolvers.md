@@ -7,6 +7,8 @@ sidebar_label: Data Sources and Resolvers
 
 We now have a deployed API, but it does not do anything yet. In this section we will create our DynamoDB tables and allow our API to interact with them.
 
+![DataSources And Resolvers](datasources-and-resolvers.png)
+
 ## 2.1. DynamoDB Tables
 
 As our primary data store, we will use DynamoDB. DynamoDB is a fully managed key-value store with single digit latency.

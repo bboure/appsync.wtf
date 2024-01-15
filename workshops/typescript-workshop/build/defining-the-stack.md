@@ -5,6 +5,10 @@ sidebar_label: Defining the Stack
 
 # 1. Defining the Stack
 
+We will start by defining the basic resources for our API: the API itself and the Cognito User Pool.
+
+![AppSync API and Cognito User Pool](appsync-api-and-cognito-user-pool.png)
+
 ## 1.1. AppSync API
 
 Our stack uses the [serverless-appsync-plugin](https://github.com/sid88in/serverless-appsync-plugin). Let’s start by adding the required definitions for our API. We will give our API a name, a schema and a default authentication method.
