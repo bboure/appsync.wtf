@@ -9,7 +9,7 @@ sidebar_label: Testing
 
 We should now have a fully working API. Let's test it, but for that we need a user to authenticate with.
 
-To do so, connect to the AWS console, and go to [Amazon cognito](https://us-east-1.console.aws.amazon.com/cognito/v2/idp/user-pools).
+To do so, connect to the AWS console, and go to [Amazon Cognito](https://us-east-1.console.aws.amazon.com/cognito/v2/idp/user-pools).
 
 Open the Cognito user pool name `AWS AppSync Workshop User Pool` and go to _App Integrations_. Under _App clients and analytics_, copy the clientId of the `AWS AppSync Workshop Client`.
 
@@ -17,7 +17,7 @@ Then execute this command, replace the following values:
 
 - `clientId` The client id you copied in Amazon Cognito
 - `username` Pick a name for your user
-- `password` Pick a password. Passwords must contain at least 8 characters, have at leat one number, one lowercase character, one uppercase character and one special character.
+- `password` Pick a password. Passwords must contain at least 8 characters, have at least one number, one lowercase character, one uppercase character and one special character.
 - `email` the email address of your user. The email must be real and valid. You will need to validate it in the following step.
 
 ```bash
@@ -137,4 +137,4 @@ mutation CreateTask {
 }
 ```
 
-Great. I'll let you play with other requests. Try to create a few more tasks and projects, then use the `Query.listTasks` to get all the tasks from a project. Also try to update and delete tasks using the `udpateTask` and `deleteTask` mutations.
+Great. I'll let you play with other requests. Try to create a few more tasks and projects, then use the `Query.listTasks` to get all the tasks from a project. Also try to update and delete tasks using the `updateTask` and `deleteTask` mutations.

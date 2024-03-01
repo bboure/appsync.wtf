@@ -58,7 +58,7 @@ GraphQL and REST are two ways to create APIs, however they differ in a few ways.
 
 REST uses verbs to communicate which operation the client wants to perform (e.g. `GET` for reads, and `PUT`, `POST` or `DELETE` for writes).
 
-GraphQL uses _Queries_ for read operations and _Mutations_ for writes. In addition to that, it disposes of _Subscriptions_ for real-time communication.
+GraphQL uses _Queries_ for read operations and _Mutations_ for writes. In addition to that, it utilizes _Subscriptions_ for real-time communication.
 
 **Underfetching and Overfetching**
 
@@ -95,7 +95,7 @@ query {
 
 REST does not have any real-time capability. If you need pub/sub for your API, you will need to build a complete different API (i.e. WebSocket) in parallel.
 
-As mentioned earlier, GraphQL supports *Subscriptions*. You will learn about subscription on the course of this workshop.
+As mentioned earlier, GraphQL supports *Subscriptions*. You will learn about subscriptions during this workshop.
 
 ## What is AWS AppSync?
 

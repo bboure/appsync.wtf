@@ -45,7 +45,7 @@ subscription OnTaskUpdated {
 }
 ```
 
-Then, from another tab, invoke the following mutation
+Then, from another tab, invoke the following mutation using your admin user
 
 :::warning GraphBolt users
 If you are using GraphBolt, you will need to execute the mutation from somewhere else (e.g. the AWS console). At the time of writing this workshop, GraphBolt does not yet support executing multiple operations at the same time.
@@ -76,7 +76,7 @@ If you come back to the tab where the subscription is running, you should see an
 
 We just saw how to create a simple subscription. However, sometimes you need advanced use cases. AWS AppSync comes with a feature called [enhanced subscription filtering](https://docs.aws.amazon.com/appsync/latest/devguide/aws-appsync-real-time-enhanced-filtering.html). It allows you to create subscriptions with advanced filters.
 
-Let's add a new subscription to illustrate this use case. Add the `onTaskAssigned` subscription.
+Let's add a new subscription to illustrate this use case. Add the `onTaskAssigned` subscription in `schema/schema.graphql`.
 
 ```graphql
 type Subscription {
@@ -152,7 +152,7 @@ In the *request* handler, we are checking that the current request comes from a 
 
 Then, we start by creating a filter rule (18-22). The rule specifies that the task's `assignees` should contain the current user's username for it to apply.
 
-Finally, our subscription has an optional `minProperty` argument. If the argument is present, we use it to add a rule that requires the task's priority to be of at least the specified value (line 26). Tasks with a lower priority would not invoke the subscription. This can be user by users to avoid receiving unnecessary noisy notifications.
+Finally, our subscription has an optional `minProperty` argument. If the argument is present, we use it to add a rule that requires the task's priority to be of at least the specified value (line 26). Tasks with a lower priority would not invoke the subscription. This can be used by users to avoid receiving unnecessary noisy notifications.
 
 We finish by applying the subscription filter with the `extensions.setSubscriptionFilter()` helper function on line 30.
 
@@ -178,7 +178,7 @@ subscription OnTaskAssigned {
 }
 ```
 
-Then, invoke the `creteTask` Mutation with your admin user. Change the `assignees` to match your non-admin user.
+Then, invoke the `createTask` Mutation with your admin user. Change the `assignees` to match your non-admin user.
 
 ```graphql
 mutation CreateTask {
