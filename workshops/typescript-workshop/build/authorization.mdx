@@ -76,7 +76,7 @@ Then, try to login using your new user, and execute the mutation again. This tim
 
 ## 4.2. Limit Tasks to Project Users
 
-Now that only admins can perform write operations on tasks, we would also like to prevent users from seeing tasks of for projects they are not in.
+Now that only admins can perform write operations on tasks, we would also like to prevent users from seeing tasks of projects they are not in.
 
 In this case, we cannot use a directive. Projects and user associations live in DynamoDB, so we will have to write the logic ourselves.
 
@@ -201,7 +201,7 @@ Update the `getTask` and `listTasks` resolvers `definitions/appsync.ts` as follo
 
 What we did is to transform the unit resolvers into pipeline resolvers, and we introduced the `authorizeUser` pipeline function.
 
-Under `getTask`, the autorization happens after fetching the task, because we first need the task entity so we can read the `projectId` from it. On the other hand, the `listTasks` query, comes with the `projectId` in `ctx.args.id`, so we immediately check the authorzation before we even try to read the tasks from the table.
+Under `getTask`, the authorization happens after fetching the task, because we first need the task entity so we can read the `projectId` from it. On the other hand, the `listTasks` query, comes with the `projectId` in `ctx.args.id`, so we immediately check the authorization before we even try to read the tasks from the table.
 
 We also need to rename `src/resolvers/Query.listTasks.ts` to `src/resolvers/listTasks.ts` , and create a new `src/resolvers/Query.listTasks.ts` with the following content:
 
