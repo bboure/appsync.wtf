@@ -47,10 +47,6 @@ subscription OnTaskUpdated {
 
 Then, from another tab, invoke the following mutation using your admin user
 
-:::warning GraphBolt users
-If you are using GraphBolt, you will need to execute the mutation from somewhere else (e.g. the AWS console). At the time of writing this workshop, GraphBolt does not yet support executing multiple operations at the same time.
-:::
-
 ```graphql
 mutation UpdateTask {
   updateTask(
@@ -88,9 +84,9 @@ type Subscription {
 }
 ```
 
-Enhanced filtering requires some custom code that we write in a resolver. However, this resolver does not need to access any data source, it is just there to configure the filtering. Luckily, AWS AppSync allows us to do so with a special kind of data source: `NONE`. *none* is a special kind of data source that do not connect to any store.
+Enhanced filtering requires some custom code that we write in a resolver. However, this resolver does not need to access any data source, it is just there to configure the filtering. Luckily, AWS AppSync allows us to do so with a special kind of data source: `NONE`. _none_ is a special kind of data source that do not connect to any store.
 
-Let's create a *none* data source. In `definitions/appsync.ts`, add the following code inside `dataSources`
+Let's create a _none_ data source. In `definitions/appsync.ts`, add the following code inside `dataSources`
 
 ```tsx
 none: {
@@ -148,7 +144,7 @@ export const response = (ctx: Context<SubscriptionOnTaskAssignedArgs>) => {
 
 Let's pause to analyze what is going on.
 
-In the *request* handler, we are checking that the current request comes from a Cognito user (lines 14-16). This is because we want the current user to receive notifications for tasks assigned to himself. Requests coming from non-users (e.g. API keys) should not be allowed to use this subscription, and it would also not make sense.
+In the _request_ handler, we are checking that the current request comes from a Cognito user (lines 14-16). This is because we want the current user to receive notifications for tasks assigned to himself. Requests coming from non-users (e.g. API keys) should not be allowed to use this subscription, and it would also not make sense.
 
 Then, we start by creating a filter rule (18-22). The rule specifies that the task's `assignees` should contain the current user's username for it to apply.
 
